@@ -38,11 +38,14 @@ class Handle(object):
             print "Handle Post webdata is ", webData
             recMsg = receive.parse_xml(webData)
             if isinstance(recMsg, receive.Msg) and recMsg.MsgType == 'text':
-                conn = pymysql.connect(host='47.93.228.142',port='3306', db='test', user='root', passwd='Roc2z2209861`', charset='utf8')
-                cur = conn.cursor()
-                cur.execute("select * from ta where id=%d and cust_type=%d")
-                rows = cur.fetchall()
-                print "%s"%rows
+                conn = pymysql.connect(host='127.0.0.1', port=3306, user='root', passwd='root', db='test')
+                cursor = conn.cursor()
+                cursor.execute("select * from ta")
+                row_1 = cursor.fetchone()
+                print row_1[0]
+                conn.commit()
+                cursor.close()
+                conn.close()
                 toUser = recMsg.FromUserName
                 fromUser = recMsg.ToUserName
                 content = "test"
