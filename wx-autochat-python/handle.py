@@ -5,6 +5,7 @@ import hashlib
 import web
 import reply
 import receive
+import pymysql
 
 
 class Handle(object):
@@ -12,10 +13,7 @@ class Handle(object):
         try:
             data = web.input()
             if len(data) == 0:
-                db1 = web.database(dbn='mysql', host='127.0.0.1',port='3306', db='test', user='root', pw='root`')
-                results = db1.query("select * from sales")
-                print "haodongxi", results
-                return results[0].country
+                return "this is a demo"
             signature = data.signature
             timestamp = data.timestamp
             nonce = data.nonce
@@ -40,6 +38,11 @@ class Handle(object):
             print "Handle Post webdata is ", webData
             recMsg = receive.parse_xml(webData)
             if isinstance(recMsg, receive.Msg) and recMsg.MsgType == 'text':
+                conn = pymysql.connect(host='47.93.228.142',port='3306', db='test', user='root', passwd='Roc2z2209861`', charset='utf8')
+                cur = conn.cursor()
+                cur.execute("select * from ta where id=%d and cust_type=%d")
+                rows = cur.fetchall()
+                print "%s"%rows
                 toUser = recMsg.FromUserName
                 fromUser = recMsg.ToUserName
                 content = "test"
