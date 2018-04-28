@@ -33,32 +33,27 @@ class Handle(object):
     def POST(self):# post请求
         try:
             webData = web.data()
-            print "Handle Post webdata is ", webData
             recMsg = receive.parse_xml(webData)
-            if isinstance(recMsg, receive.Msg) and recMsg.MsgType == 'text':
-                conn = pymysql.connect(host='47.93.228.142', port=3306, user='root', passwd='Roc2z2209861`', db='test',charset='utf8mb4')
+            if isinstance(recMsg, receive.Msg) and recMsg.MsgType == 'text' and recMsg.Content[1] != "'":
+                conn = pymysql.connect(host='', port=3306, user='root', passwd='', db='test',charset='utf8mb4')
                 cursor = conn.cursor()
-                print recMsg.Content
-                print "select * from questions where question like '%" + recMsg.Content + "%'"
                 cursor.execute("select * from questions where question like '%" + recMsg.Content + "%'")
                 rows = cursor.fetchall()
-                print len(rows)
                 content=""
                 if len(rows)>0:
                     for row in rows:
-                        content +=  'question:' +  row[1] + '\n' + 'answer:' + row[2] + '\n'
+                        content += "问题:".decode('utf-8').encode('utf-8') +  row[1].encode('utf-8') + '\n' + "答案:".decode('utf-8').encode('utf-8')  + row[2].encode('utf-8') + '\n'
                 else:
-                    content="this question is not found"
+                    content = "没有找到相关问题！"
                 conn.commit()
-                print content
                 cursor.close()
                 conn.close()
                 toUser = recMsg.FromUserName
                 fromUser = recMsg.ToUserName
-                replyMsg = reply.TextMsg(toUser, fromUser, content)
+                description = content
+                replyMsg = reply.ImageTextMsg(toUser, fromUser, description)
                 return replyMsg.send()
             else:
-                print "暂且不处理"
                 return "success"
         except Exception, Argment:
-            return "请不要输入特殊字符"
+            return Argment 
